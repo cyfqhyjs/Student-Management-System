@@ -1,168 +1,143 @@
 package main.java;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Center {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Student[] arr = new Student[3];
-        int i = 0;
+        ArrayList<Student> students = new ArrayList<>();
+
 
         while (true) {
             System.out.println("\n1.添加学生");
-            System.out.println("2.查看学生");
-            System.out.println("3.删除学生");
-            System.out.println("4.修改学生");
+            System.out.println("2.删除学生");
+            System.out.println("3.修改学生");
+            System.out.println("4.查询学生");
             System.out.println("5.退出系统");
             System.out.print("请选择操作：");
-            int choice = sc.nextInt();
-
-            switch (choice) {
-                case 1:
-                    addStudent(arr);
-                    break;
-                case 2:
-                    if (containsArr(arr) && arr[i] != null) {
-                        printArr(arr);
-                    } else {
-                        System.out.println("暂无学生信息");
-                    }
-                    break;
-                case 3:
-                    deleteStudent(arr);
-                    break;
-                case 4:
-                    exchangeStudent(arr);
-                    break;
-                case 5:
-                    System.exit(0);
-                    break;
+            String choose = sc.next();
+            switch (choose) {
+                case "1" -> addStudent(students);
+                case "2" -> deleteStudent(students);
+                case "3" -> updateStudent(students);
+                case "4" -> searchStudent(students);
+                case "5" -> {
+                    System.out.println("退出系统");
+                    //break loop;
+                    System.exit(0);//停止虚拟机运行
+                }
+                default -> System.out.println("没有这个选项");
             }
         }
     }
-    //添加学生
-    public static void addStudent(Student[] arr) {
+
+    public static void addStudent(ArrayList<Student> students) {
+        Student student = new Student();
         Scanner sc = new Scanner(System.in);
-        boolean flag = containsArr(arr);
-        int i = 0;
-        if (flag && i < arr.length) {
+        while (true) {
             System.out.println("请输入学生ID：");
-            int id = sc.nextInt();
-            System.out.println("请输入学生姓名：");
-            String name = sc.next();
-            System.out.println("请输入学生年龄：");
-            int age = sc.nextInt();
-
-            arr[i] = new Student(id, name, age);
-            System.out.println("添加成功！当前学生信息：");
-            printArr(arr);
-            i++;
-        } else {
-            System.out.println("数组已满,正在创建新数组");
-            Student[] newArr = creatArr(arr);
-            System.out.println("请输入学生信息：");
-            System.out.println("ID：");
-            int id = sc.nextInt();
-            System.out.println("姓名：");
-            String name = sc.next();
-            System.out.println("年龄：");
-            int age = sc.nextInt();
-
-            newArr[i] = new Student(id, name, age);
-            arr = newArr; // 更新数组引用
-            System.out.println("添加成功！当前学生信息：");
-            printArr(arr);
-            i++;
-        }
-    }
-
-    //通过ID删除学生
-    public static void deleteStudent(Student[] arr) {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("请输入要删除的学生ID;");
-        int id = sc.nextInt();
-        int index = getIndex(arr, id);
-        if (index >= 0) {
-            arr[index] = null;
-            System.out.println("学生已删除");
-            for (int i = 0; i < arr.length - 1; i++) {
-                arr[i] = arr[i + 1];
+            String ID = sc.next();
+            boolean flag = checkID(students, ID);
+            if (flag) {
+                System.out.println("学生存在");
+            } else {
+                student.setID(ID);
+                break;
             }
-        } else {
-            System.out.println("查无此人");
         }
+        System.out.println("请输入学生姓名：");
+        student.setName(sc.next());
+        System.out.println("请输入学生年龄：");
+        student.setAge(sc.nextInt());
+        System.out.println("请输入学生家庭住址：");
+        student.setAddress(sc.next());
+        students.add(student);
+        System.out.println("添加成功");
     }
 
-    //通过ID修改学生信息
-    public static void exchangeStudent(Student[] arr) {
+    public static void deleteStudent(ArrayList<Student> students) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("请输入你要修改的学生ID:");
-        int id = sc.nextInt();
-        int index = getIndex(arr, id);
+        System.out.println("请输入要删除的学生id");
+        String ID = sc.next();
+        int index = getIndex(students, ID);
         if (index >= 0) {
-            Student stu = arr[index];
-            System.out.println("请输入您想要修改的信息(姓名，年龄)");
-            String info = sc.next();
-            whichExchange(arr, index, info);
+            students.remove(index);
+            System.out.println("ID为" + ID + "的学生删除成功");
+        } else {
+            System.out.println("id不存在");
         }
     }
 
-    //修改的内容
-    public static void whichExchange(Student[] arr, int index, String info) {
+    public static void updateStudent(ArrayList<Student> students) {
         Scanner sc = new Scanner(System.in);
-        Student stu = arr[index];
-        switch (info) {
-            case "姓名":
-                String name = sc.next();
-                stu.setName(name);
-                break;
-            case "年龄":
-                int age = sc.nextInt();
-                stu.setAge(age);
-                break;
+        System.out.println("请输入要修改学生的id");
+        String ID = sc.next();
+        int index = getIndex(students, ID);
+        if (index == -1) {
+            System.out.println("学生不存在");
+            return;
+        }
+        System.out.println("请输入您想要修改的信息(姓名，年龄,家庭地址)");
+        String info = sc.next();
+        whichExchange(students, index, info);
+
+
+    }
+
+    public static void searchStudent(ArrayList<Student> students) {
+        if (students.size() == 0) {
+            System.out.println("当前无学生数据");
+            return;
+        }
+        System.out.println("id\t\t姓名\t年龄\t家庭地址\t");
+        for (int i = 0; i < students.size(); i++) {
+            Student student = students.get(i);
+            System.out.println(student.getID() + "\t" + student.getName() + "\t" + student.getAge() + "\t" + student.getAddress());
         }
     }
 
-
-    //如果数组装满，创建新数组
-    public static Student[] creatArr(Student[] arr) {
-        Student[] newArr = new Student[arr.length + 1];
-        for (int i = 0; i < newArr.length; i++) {
-            newArr[i] = arr[i];
-        }
-        return newArr;
-    }
-
-    //判断数组是否装满
-    public static boolean containsArr(Student[] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == null) {
+    public static boolean checkID(ArrayList<Student> students, String id) {
+       /* for (int i = 0; i < students.size(); i++) {
+            Student sid = students.get(i);
+            if(sid.getID().equals(id)){
                 return true;
             }
         }
-        return false;
+        return false;*/
+        return getIndex(students, id) >= 0;
     }
 
-    //遍历学生信息
-    public static void printArr(Student[] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] != null) {
-                System.out.println(arr[i].getID() + "," + arr[i].getName() + "," + arr[i].getAge());
-            }
-        }
-    }
-
-    //获取学生ID在数组中的索引
-    public static int getIndex(Student[] arr, int ID) {
-        for (int i = 0; i < arr.length; i++) {
-            Student stu = arr[i];
-            if (stu != null) {
-                int id = stu.getID();
-                if (ID == id) {
-                    return i;
-                }
+    public static int getIndex(ArrayList<Student> students, String ID) {
+        for (int i = 0; i < students.size(); i++) {
+            //得到学生对象
+            Student student = students.get(i);
+            if (student.getID().equals(ID)) {
+                return i;
             }
         }
         return -1;
+    }
+
+    public static void whichExchange(ArrayList<Student> students,int index,String info) {
+        Scanner sc = new Scanner(System.in);
+        Student student = students.get(index);
+        switch (info) {
+            case "姓名":
+                String name = sc.next();
+                student.setName(name);
+                System.out.println("修改成功");
+                break;
+            case "年龄":
+                int age = sc.nextInt();
+                student.setAge(age);
+                System.out.println("修改成功");
+                break;
+            case "家庭地址":
+                String address = sc.next();
+                student.setAddress(address);
+                System.out.println("修改成功");
+                break;
+        }
     }
 }

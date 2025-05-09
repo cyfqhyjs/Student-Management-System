@@ -1,24 +1,26 @@
 package main.java;
 
 public class Student {
-    private int ID;
+    private String ID;
     private String name;
     private int age;
+    private String address;
 
     public Student() {
     }
 
-    public Student(int ID, String name, int age) {
+    public Student(String ID, String name, int age, String address) {
         this.ID = ID;
         this.name = name;
         this.age = age;
+        this.address = address;
     }
 
-    public int getID() {
+    public String getID() {
         return ID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 
@@ -36,5 +38,13 @@ public class Student {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
